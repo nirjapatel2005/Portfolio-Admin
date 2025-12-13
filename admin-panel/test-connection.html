@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frontend-Backend Connection Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-card {
+            background: white;
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        .success { background: #4CAF50; color: white; }
+        .error { background: #f44336; color: white; }
+        .pending { background: #ff9800; color: white; }
+        button {
+            background: #2196F3;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #1976D2; }
+        pre {
+            background: #f4f4f4;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 Frontend-Backend Connection Test</h1>
+    
+    <div class="test-card">
+        <h2>1. Backend Health Check</h2>
+        <p>Testing: <code>GET http://localhost:5000/</code></p>
+        <button onclick="testBackendHealth()">Test Backend</button>
+        <span id="health-status" class="status pending">Pending</span>
+        <pre id="health-result"></pre>
+    </div>
+
+    <div class="test-card">
+        <h2>2. CORS Configuration</h2>
+        <p>Testing if backend allows requests from this origin</p>
+        <button onclick="testCORS()">Test CORS</button>
+        <span id="cors-status" class="status pending">Pending</span>
+        <pre id="cors-result"></pre>
+    </div>
+
+    <div class="test-card">
+        <h2>3. Login Endpoint</h2>
+        <p>Testing: <code>POST /auth/login</code></p>
+        <input type="email" id="test-email" placeholder="Email" value="admin@example.com" style="padding: 8px; margin: 5px; width: 200px;">
+        <input type="password" id="test-password" placeholder="Password" style="padding: 8px; margin: 5px; width: 200px;">
+        <button onclick="testLogin()">Test Login</button>
+        <span id="login-status" class="status pending">Pending</span>
+        <pre id="login-result"></pre>
+    </div>
+
+    <div class="test-card">
+        <h2>4. API Base URL Configuration</h2>
+        <p>Current API Base URL:</p>
+        <pre id="api-url">Checking...</pre>
+    </div>
+
+    <div class="test-card">
+        <h2>5. LocalStorage Token Check</h2>
+        <p>Current token status:</p>
+        <button onclick="checkToken()">Check Token</button>
+        <button onclick="clearToken()">Clear Token</button>
+        <pre id="token-result"></pre>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:5000';
+
+        async function testBackendHealth() {
+            const statusEl = document.getElementById('health-status');
+            const resultEl = document.getElementById('health-result');
+            
+            statusEl.textContent = 'Testing...';
+            statusEl.className = 'status pending';
+            
+            try {
+                const response = await fetch(API_BASE_URL);
+                const text = await response.text();
+                
+                if (response.ok && text.includes('Backend Running')) {
+                    statusEl.textContent = '✅ Success';
+                    statusEl.className = 'status success';
+                    resultEl.textContent = `Status: ${response.status}\nResponse: ${text}`;
+                } else {
+                    statusEl.textContent = '⚠️ Unexpected Response';
+                    statusEl.className = 'status error';
+                    resultEl.textContent = `Status: ${response.status}\nResponse: ${text}`;
+                }
+            } catch (error) {
+                statusEl.textContent = '❌ Failed';
+                statusEl.className = 'status error';
+                resultEl.textContent = `Error: ${error.message}\n\nPossible causes:\n- Backend not running\n- Wrong port\n- Firewall blocking connection`;
+            }
+        }
+
+        async function testCORS() {
+            const statusEl = document.getElementById('cors-status');
+            const resultEl = document.getElementById('cors-result');
+            
+            statusEl.textContent = 'Testing...';
+            statusEl.className = 'status pending';
+            
+            try {
+                const response = await fetch(API_BASE_URL, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    statusEl.textContent = '✅ CORS Allowed';
+                    statusEl.className = 'status success';
+                    resultEl.textContent = `CORS is properly configured!\nOrigin: ${window.location.origin}\nBackend: ${API_BASE_URL}`;
+                } else {
+                    statusEl.textContent = '⚠️ CORS Issue';
+                    statusEl.className = 'status error';
+                    resultEl.textContent = `Status: ${response.status}\nCheck backend CORS configuration`;
+                }
+            } catch (error) {
+                if (error.message.includes('CORS')) {
+                    statusEl.textContent = '❌ CORS Blocked';
+                    statusEl.className = 'status error';
+                    resultEl.textContent = `CORS Error: ${error.message}\n\nFix: Add ${window.location.origin} to backend CORS allowedOrigins`;
+                } else {
+                    statusEl.textContent = '❌ Connection Failed';
+                    statusEl.className = 'status error';
+                    resultEl.textContent = `Error: ${error.message}`;
+                }
+            }
+        }
+
+        async function testLogin() {
+            const statusEl = document.getElementById('login-status');
+            const resultEl = document.getElementById('login-result');
+            const email = document.getElementById('test-email').value;
+            const password = document.getElementById('test-password').value;
+            
+            statusEl.textContent = 'Testing...';
+            statusEl.className = 'status pending';
+            
+            if (!email || !password) {
+                statusEl.textContent = '⚠️ Missing Credentials';
+                statusEl.className = 'status error';
+                resultEl.textContent = 'Please enter email and password';
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.token) {
+                    statusEl.textContent = '✅ Login Success';
+                    statusEl.className = 'status success';
+                    resultEl.textContent = `Login successful!\nToken: ${data.token.substring(0, 20)}...\nUser: ${JSON.stringify(data.user, null, 2)}`;
+                } else {
+                    statusEl.textContent = '❌ Login Failed';
+                    statusEl.className = 'status error';
+                    resultEl.textContent = `Status: ${response.status}\nError: ${data.error || data.message || 'Unknown error'}`;
+                }
+            } catch (error) {
+                statusEl.textContent = '❌ Request Failed';
+                statusEl.className = 'status error';
+                resultEl.textContent = `Error: ${error.message}`;
+            }
+        }
+
+        function checkToken() {
+            const token = localStorage.getItem('adminToken');
+            const resultEl = document.getElementById('token-result');
+            
+            if (token) {
+                try {
+                    // Decode JWT (basic, just to show it exists)
+                    const parts = token.split('.');
+                    const payload = JSON.parse(atob(parts[1]));
+                    const exp = new Date(payload.exp * 1000);
+                    const now = new Date();
+                    const isExpired = exp < now;
+                    
+                    resultEl.textContent = `Token exists: ✅\nExpires: ${exp.toLocaleString()}\nStatus: ${isExpired ? '❌ EXPIRED' : '✅ Valid'}\n\nToken preview: ${token.substring(0, 50)}...`;
+                } catch (e) {
+                    resultEl.textContent = `Token exists but invalid format\nToken: ${token.substring(0, 50)}...`;
+                }
+            } else {
+                resultEl.textContent = 'No token found in localStorage';
+            }
+        }
+
+        function clearToken() {
+            localStorage.removeItem('adminToken');
+            document.getElementById('token-result').textContent = 'Token cleared!';
+        }
+
+        // Check API URL on load
+        document.getElementById('api-url').textContent = API_BASE_URL || 'Not configured';
+
+        // Auto-run backend health check
+        window.addEventListener('load', () => {
+            testBackendHealth();
+            checkToken();
+        });
+    </script>
+</body>
+</html>
+
