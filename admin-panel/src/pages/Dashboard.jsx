@@ -164,10 +164,10 @@ export default function Dashboard() {
       <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg p-6 text-white">
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold mb-2">Welcome back, Admin! 👋</h1>
-            <p className="text-blue-100">
-              Here's what's happening with your portfolio today.
-            </p>
+        <h1 className="text-3xl font-bold mb-2">Welcome back, Admin! 👋</h1>
+        <p className="text-blue-100">
+          Here's what's happening with your portfolio today.
+        </p>
             {isConnected && (
               <p className="text-blue-200 text-sm mt-1 flex items-center">
                 <span className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></span>
@@ -218,7 +218,7 @@ export default function Dashboard() {
                     <span className="ml-2 text-sm text-gray-500">Loading...</span>
                   </div>
                 ) : (
-                  <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
+                <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
                 )}
               </div>
             </div>
@@ -244,7 +244,7 @@ export default function Dashboard() {
             {activitiesLoading ? (
               <div className="flex items-center justify-center py-8">
                 <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
-              </div>
+                </div>
             ) : activities.length === 0 ? (
               <div className="text-center py-8 text-gray-500">
                 <p className="text-sm">No activities yet</p>
