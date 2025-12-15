@@ -13,6 +13,8 @@ import Blog from "../pages/Blog";
 import Testimonial from "../pages/Testimonial";
 import Services from "../pages/Services";
 import Media from "../pages/Media";
+import HomeSettings from "../pages/HomeSettings";
+import Notifications from "../pages/Notifications";
 
 export default function AppRoutes() {
   return (
@@ -41,6 +43,8 @@ export default function AppRoutes() {
         <Route path="testimonial" element={<Testimonial />} />
         <Route path="services" element={<Services />} />
         <Route path="media" element={<Media />} />
+        <Route path="home" element={<HomeSettings />} />
+        <Route path="notifications" element={<Notifications />} />
       </Route>
 
       {/* Fallback */}

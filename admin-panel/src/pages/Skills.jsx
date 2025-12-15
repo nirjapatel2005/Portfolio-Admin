@@ -154,16 +154,30 @@ export default function Skills() {
               <div className="space-y-4">
                 {getSkillsByCategory(category).map((skill) => (
                   <div key={skill._id} className="flex items-center justify-between">
-                    <div className="flex-1">
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="text-sm font-medium text-gray-700">{skill.name}</span>
-                        <span className="text-sm text-gray-500">{skill.level}%</span>
-                      </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div
-                          className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                          style={{ width: `${skill.level}%` }}
-                        ></div>
+                    <div className="flex items-center flex-1">
+                      {skill.icon && (
+                        <div className="mr-3">
+                          <img
+                            src={skill.icon}
+                            alt={skill.name}
+                            className="w-8 h-8 object-contain"
+                            onError={(e) => {
+                              e.target.style.display = 'none';
+                            }}
+                          />
+                        </div>
+                      )}
+                      <div className="flex-1">
+                        <div className="flex justify-between items-center mb-2">
+                          <span className="text-sm font-medium text-gray-700">{skill.name}</span>
+                          <span className="text-sm text-gray-500">{skill.level}%</span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2">
+                          <div
+                            className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                            style={{ width: `${skill.level}%` }}
+                          ></div>
+                        </div>
                       </div>
                     </div>
                     <div className="ml-4 flex space-x-2">
@@ -204,16 +218,30 @@ export default function Skills() {
             <div className="space-y-4">
               {skills.filter(s => !s.category).map((skill) => (
                 <div key={skill._id} className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <div className="flex justify-between items-center mb-2">
-                      <span className="text-sm font-medium text-gray-700">{skill.name}</span>
-                      <span className="text-sm text-gray-500">{skill.level}%</span>
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div
-                        className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                        style={{ width: `${skill.level}%` }}
-                      ></div>
+                  <div className="flex items-center flex-1">
+                    {skill.icon && (
+                      <div className="mr-3">
+                        <img
+                          src={skill.icon}
+                          alt={skill.name}
+                          className="w-8 h-8 object-contain"
+                          onError={(e) => {
+                            e.target.style.display = 'none';
+                          }}
+                        />
+                      </div>
+                    )}
+                    <div className="flex-1">
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-sm font-medium text-gray-700">{skill.name}</span>
+                        <span className="text-sm text-gray-500">{skill.level}%</span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div
+                          className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                          style={{ width: `${skill.level}%` }}
+                        ></div>
+                      </div>
                     </div>
                   </div>
                   <div className="ml-4 flex space-x-2">

@@ -9,6 +9,8 @@ export { serviceService } from "./serviceService";
 export { aboutService } from "./aboutService";
 export { mediaService } from "./mediaService";
 export { activityService } from "./activityService";
+export { homeService } from "./homeService";
+export { contactService } from "./contactService";
 export { userService } from "./userService";
 export { default as api } from "./api";
 
