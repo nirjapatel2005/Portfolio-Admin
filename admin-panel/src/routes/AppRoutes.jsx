@@ -1,5 +1,7 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import Login from "../pages/Login";
+import ForgotPassword from "../pages/ForgotPassword";
+import ResetPassword from "../pages/ResetPassword";
 import DashboardLayout from "../layout/DashboardLayout";
 import ProtectedRoute from "./ProtectedRoute";
 
@@ -15,12 +17,15 @@ import Services from "../pages/Services";
 import Media from "../pages/Media";
 import HomeSettings from "../pages/HomeSettings";
 import Notifications from "../pages/Notifications";
+import AccountSettings from "../pages/AccountSettings";
 
 export default function AppRoutes() {
   return (
     <Routes>
       {/* Public */}
       <Route path="/login" element={<Login />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
 
       {/* Protected Dashboard */}
       <Route
@@ -45,6 +50,7 @@ export default function AppRoutes() {
         <Route path="media" element={<Media />} />
         <Route path="home" element={<HomeSettings />} />
         <Route path="notifications" element={<Notifications />} />
+        <Route path="account-settings" element={<AccountSettings />} />
       </Route>
 
       {/* Fallback */}

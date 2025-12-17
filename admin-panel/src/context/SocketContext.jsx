@@ -1,5 +1,12 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { io } from "socket.io-client";
+import config from "../config/env";
+
+// Determine if in development mode (fallback if not exported)
+const isDevelopment =
+  typeof import.meta !== "undefined" && import.meta.env && import.meta.env.DEV
+    ? import.meta.env.DEV
+    : process.env.NODE_ENV === "development";
 
 const SocketContext = createContext();
 
@@ -8,8 +15,8 @@ export const SocketProvider = ({ children }) => {
   const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
-    // Get API base URL from environment or use default
-    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+    // Get API base URL from config
+    const API_BASE_URL = config.apiBaseUrl;
     
     // Create socket connection
     const newSocket = io(API_BASE_URL, {
@@ -20,17 +27,23 @@ export const SocketProvider = ({ children }) => {
     });
 
     newSocket.on("connect", () => {
-      console.log("Socket connected:", newSocket.id);
+      if (isDevelopment) {
+        console.log("Socket connected:", newSocket.id);
+      }
       setIsConnected(true);
     });
 
     newSocket.on("disconnect", () => {
-      console.log("Socket disconnected");
+      if (isDevelopment) {
+        console.log("Socket disconnected");
+      }
       setIsConnected(false);
     });
 
     newSocket.on("connect_error", (error) => {
-      console.error("Socket connection error:", error);
+      if (isDevelopment) {
+        console.error("Socket connection error:", error);
+      }
       setIsConnected(false);
     });
 

@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
+import Modal from "../components/Modal";
 import { projectService } from "../services/projectService";
 
 export default function Projects() {
@@ -268,13 +269,13 @@ export default function Projects() {
       )}
 
       {/* Modal */}
-      {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-            <h2 className="text-2xl font-bold mb-4">
-              {editingProject ? "Edit Project" : "Add Project"}
-            </h2>
-            <form onSubmit={handleSubmit} className="space-y-4">
+      <Modal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        title={editingProject ? "Edit Project" : "Add Project"}
+        maxWidth="max-w-2xl"
+      >
+        <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Title *</label>
                 <input
@@ -395,25 +396,23 @@ export default function Projects() {
                   {error}
                 </div>
               )}
-              <div className="flex justify-end space-x-3">
+              <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200">
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                  className="px-6 py-2.5 border border-gray-300 rounded-lg hover:bg-gray-50 text-gray-700 font-medium transition-all duration-200"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                  className="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 font-medium transition-all duration-200 shadow-sm hover:shadow-md"
                 >
                   {editingProject ? "Update" : "Add"} Project
                 </button>
               </div>
             </form>
-          </div>
-        </div>
-      )}
+      </Modal>
     </div>
   );
 }

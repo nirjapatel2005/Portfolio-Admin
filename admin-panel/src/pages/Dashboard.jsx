@@ -1,17 +1,18 @@
-import { useState, useEffect, useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { projectService, blogService, skillService, testimonialService, activityService } from "../services";
+import { ChatIcon, DocumentIcon, FolderIcon, ImageIcon, ToolsIcon } from "../components/Icons";
 import { useSocket } from "../context/SocketContext";
+import { activityService, blogService, projectService, skillService, testimonialService } from "../services";
 import { formatRelativeTime } from "../utils/formatTime";
 
 export default function Dashboard() {
   const { socket, isConnected } = useSocket();
   const navigate = useNavigate();
   const [stats, setStats] = useState([
-    { name: 'Total Projects', value: '0', icon: '📁', color: 'bg-blue-500', loading: true, key: 'project' },
-    { name: 'Blog Posts', value: '0', icon: '📝', color: 'bg-green-500', loading: true, key: 'blog' },
-    { name: 'Skills', value: '0', icon: '🛠️', color: 'bg-purple-500', loading: true, key: 'skill' },
-    { name: 'Testimonials', value: '0', icon: '💬', color: 'bg-yellow-500', loading: true, key: 'testimonial' },
+    { name: 'Total Projects', value: '0', Icon: FolderIcon, color: 'bg-blue-500', loading: true, key: 'project' },
+    { name: 'Blog Posts', value: '0', Icon: DocumentIcon, color: 'bg-green-500', loading: true, key: 'blog' },
+    { name: 'Skills', value: '0', Icon: ToolsIcon, color: 'bg-purple-500', loading: true, key: 'skill' },
+    { name: 'Testimonials', value: '0', Icon: ChatIcon, color: 'bg-yellow-500', loading: true, key: 'testimonial' },
   ]);
   const [refreshing, setRefreshing] = useState(false);
   const [activities, setActivities] = useState([]);
@@ -104,19 +105,19 @@ export default function Dashboard() {
 
       // Update stats with real counts
       setStats([
-        { name: 'Total Projects', value: getCount(projectsData).toString(), icon: '📁', color: 'bg-blue-500', loading: false },
-        { name: 'Blog Posts', value: getCount(blogsData).toString(), icon: '📝', color: 'bg-green-500', loading: false },
-        { name: 'Skills', value: getCount(skillsData).toString(), icon: '🛠️', color: 'bg-purple-500', loading: false },
-        { name: 'Testimonials', value: getCount(testimonialsData).toString(), icon: '💬', color: 'bg-yellow-500', loading: false },
+        { name: 'Total Projects', value: getCount(projectsData).toString(), Icon: FolderIcon, color: 'bg-blue-500', loading: false },
+        { name: 'Blog Posts', value: getCount(blogsData).toString(), Icon: DocumentIcon, color: 'bg-green-500', loading: false },
+        { name: 'Skills', value: getCount(skillsData).toString(), Icon: ToolsIcon, color: 'bg-purple-500', loading: false },
+        { name: 'Testimonials', value: getCount(testimonialsData).toString(), Icon: ChatIcon, color: 'bg-yellow-500', loading: false },
       ]);
     } catch (error) {
       console.error("Error fetching dashboard stats:", error);
       // Set all to 0 on error
       setStats([
-        { name: 'Total Projects', value: '0', icon: '📁', color: 'bg-blue-500', loading: false },
-        { name: 'Blog Posts', value: '0', icon: '📝', color: 'bg-green-500', loading: false },
-        { name: 'Skills', value: '0', icon: '🛠️', color: 'bg-purple-500', loading: false },
-        { name: 'Testimonials', value: '0', icon: '💬', color: 'bg-yellow-500', loading: false },
+        { name: 'Total Projects', value: '0', Icon: FolderIcon, color: 'bg-blue-500', loading: false },
+        { name: 'Blog Posts', value: '0', Icon: DocumentIcon, color: 'bg-green-500', loading: false },
+        { name: 'Skills', value: '0', Icon: ToolsIcon, color: 'bg-purple-500', loading: false },
+        { name: 'Testimonials', value: '0', Icon: ChatIcon, color: 'bg-yellow-500', loading: false },
       ]);
     } finally {
       if (showRefreshing) {
@@ -164,7 +165,7 @@ export default function Dashboard() {
       <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg p-6 text-white">
         <div className="flex justify-between items-center">
           <div>
-        <h1 className="text-3xl font-bold mb-2">Welcome back, Admin! 👋</h1>
+        <h1 className="text-3xl font-bold mb-2">Welcome back, Admin!</h1>
         <p className="text-blue-100">
           Here's what's happening with your portfolio today.
         </p>
@@ -207,8 +208,8 @@ export default function Dashboard() {
         {stats.map((stat, index) => (
           <div key={index} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
             <div className="flex items-center">
-              <div className={`${stat.color} rounded-lg p-3 text-white text-2xl`}>
-                {stat.icon}
+              <div className={`${stat.color} rounded-lg p-3 text-white`}>
+                <stat.Icon className="w-6 h-6" />
               </div>
               <div className="ml-4 flex-1">
                 <p className="text-sm font-medium text-gray-600">{stat.name}</p>
@@ -272,7 +273,9 @@ export default function Dashboard() {
               onClick={() => navigate("/dashboard/blog?action=create")}
               className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-blue-500 transition-all text-left group"
             >
-              <div className="text-2xl mb-2 group-hover:scale-110 transition-transform">📝</div>
+              <div className="mb-2 group-hover:scale-110 transition-transform text-blue-600">
+                <DocumentIcon className="w-8 h-8" />
+              </div>
               <div className="text-sm font-medium text-gray-900">New Blog Post</div>
               <div className="text-xs text-gray-500 mt-1">Create a new blog post</div>
             </button>
@@ -280,7 +283,9 @@ export default function Dashboard() {
               onClick={() => navigate("/dashboard/projects?action=create")}
               className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-blue-500 transition-all text-left group"
             >
-              <div className="text-2xl mb-2 group-hover:scale-110 transition-transform">📁</div>
+              <div className="mb-2 group-hover:scale-110 transition-transform text-blue-600">
+                <FolderIcon className="w-8 h-8" />
+              </div>
               <div className="text-sm font-medium text-gray-900">Add Project</div>
               <div className="text-xs text-gray-500 mt-1">Add a new project</div>
             </button>
@@ -288,7 +293,9 @@ export default function Dashboard() {
               onClick={() => navigate("/dashboard/skills")}
               className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-blue-500 transition-all text-left group"
             >
-              <div className="text-2xl mb-2 group-hover:scale-110 transition-transform">🛠️</div>
+              <div className="mb-2 group-hover:scale-110 transition-transform text-blue-600">
+                <ToolsIcon className="w-8 h-8" />
+              </div>
               <div className="text-sm font-medium text-gray-900">Update Skills</div>
               <div className="text-xs text-gray-500 mt-1">Manage your skills</div>
             </button>
@@ -296,7 +303,9 @@ export default function Dashboard() {
               onClick={() => navigate("/dashboard/media")}
               className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-blue-500 transition-all text-left group"
             >
-              <div className="text-2xl mb-2 group-hover:scale-110 transition-transform">🖼️</div>
+              <div className="mb-2 group-hover:scale-110 transition-transform text-blue-600">
+                <ImageIcon className="w-8 h-8" />
+              </div>
               <div className="text-sm font-medium text-gray-900">Upload Media</div>
               <div className="text-xs text-gray-500 mt-1">Upload images and files</div>
             </button>

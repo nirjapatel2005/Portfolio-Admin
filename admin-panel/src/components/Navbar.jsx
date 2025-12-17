@@ -1,11 +1,11 @@
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { useState, useEffect } from "react";
-import { contactService } from "../services";
 import { useSocket } from "../context/SocketContext";
+import { contactService } from "../services";
 
 export default function Navbar({ onToggleSidebar, sidebarOpen }) {
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
   const navigate = useNavigate();
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
@@ -83,7 +83,7 @@ export default function Navbar({ onToggleSidebar, sidebarOpen }) {
             title="Notifications"
           >
             <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-5 5v-5zM10.5 3.5a6 6 0 0 1 6 6v2l1.5 3h-15l1.5-3v-2a6 6 0 0 1 6-6z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
             </svg>
             {unreadCount > 0 && (
               <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] rounded-full px-1.5 py-0.5">
@@ -132,11 +132,13 @@ export default function Navbar({ onToggleSidebar, sidebarOpen }) {
             className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-100 transition-colors"
           >
             <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-              <span className="text-white font-semibold text-sm">A</span>
+              <span className="text-white font-semibold text-sm">
+                {user?.name ? user.name.charAt(0).toUpperCase() : "A"}
+              </span>
             </div>
             <div className="hidden md:block text-left">
-              <p className="text-sm font-medium text-gray-700">Admin User</p>
-              <p className="text-xs text-gray-500">admin@example.com</p>
+              <p className="text-sm font-medium text-gray-700">{user?.name || "Admin User"}</p>
+              <p className="text-xs text-gray-500">{user?.email || "admin@example.com"}</p>
             </div>
             <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -147,13 +149,16 @@ export default function Navbar({ onToggleSidebar, sidebarOpen }) {
           {showProfileMenu && (
             <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
               <div className="px-4 py-2 border-b border-gray-100">
-                <p className="text-sm font-medium text-gray-700">Admin User</p>
-                <p className="text-xs text-gray-500">admin@example.com</p>
+                <p className="text-sm font-medium text-gray-700">{user?.name || "Admin User"}</p>
+                <p className="text-xs text-gray-500">{user?.email || "admin@example.com"}</p>
               </div>
-              <button className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
-                Profile Settings
-              </button>
-              <button className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+              <button 
+                onClick={() => {
+                  navigate("/dashboard/account-settings");
+                  setShowProfileMenu(false);
+                }}
+                className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+              >
                 Account Settings
               </button>
               <hr className="my-1" />

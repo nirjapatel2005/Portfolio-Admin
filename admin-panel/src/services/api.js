@@ -1,7 +1,8 @@
 import axios from "axios";
+import { config } from "../config/env.js";
 
 // Base URL for the backend API
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+const API_BASE_URL = config.apiBaseUrl;
 
 // Create axios instance
 const api = axios.create({
@@ -33,6 +34,13 @@ api.interceptors.response.use(
       // Don't redirect if we're already on the login page or if it's a login request
       const isLoginRequest = error.config?.url?.includes("/auth/login");
       const isOnLoginPage = window.location.pathname === "/login";
+      const isProfileUpdate = error.config?.url?.includes("/admin/me");
+      
+      // Don't logout on profile update errors (password validation, etc.)
+      // These should be handled by the component showing error messages
+      if (isProfileUpdate) {
+        return Promise.reject(error);
+      }
       
       // Check if token is expired
       const isExpired = error.response?.data?.expired === true;

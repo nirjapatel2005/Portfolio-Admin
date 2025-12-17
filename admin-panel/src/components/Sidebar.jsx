@@ -1,17 +1,31 @@
 import { NavLink } from "react-router-dom";
+import {
+  BriefcaseIcon,
+  ChatIcon,
+  DashboardIcon,
+  DocumentIcon,
+  FolderIcon,
+  HomeIcon,
+  ImageIcon,
+  PortfolioIcon,
+  SettingsIcon,
+  ToolsIcon,
+  UserIcon,
+  UsersIcon,
+} from "./Icons";
 
 const menuItems = [
-  { name: "Dashboard", path: "/dashboard", icon: "📊" },
-  { name: "Home", path: "/dashboard/home", icon: "🏠" },
-  { name: "About", path: "/dashboard/about", icon: "👤" },
-  { name: "Users", path: "/dashboard/users", icon: "👥" },
-  { name: "Experience", path: "/dashboard/experience", icon: "💼" },
-  { name: "Skills", path: "/dashboard/skills", icon: "🛠️" },
-  { name: "Projects", path: "/dashboard/projects", icon: "📁" },
-  { name: "Blog", path: "/dashboard/blog", icon: "📝" },
-  { name: "Testimonial", path: "/dashboard/testimonial", icon: "💬" },
-  { name: "Services", path: "/dashboard/services", icon: "⚙️" },
-  { name: "Media", path: "/dashboard/media", icon: "🖼️" },
+  { name: "Dashboard", path: "/dashboard", Icon: DashboardIcon },
+  { name: "Home", path: "/dashboard/home", Icon: HomeIcon },
+  { name: "About", path: "/dashboard/about", Icon: UserIcon },
+  { name: "Users", path: "/dashboard/users", Icon: UsersIcon },
+  { name: "Experience", path: "/dashboard/experience", Icon: BriefcaseIcon },
+  { name: "Skills", path: "/dashboard/skills", Icon: ToolsIcon },
+  { name: "Projects", path: "/dashboard/projects", Icon: FolderIcon },
+  { name: "Blog", path: "/dashboard/blog", Icon: DocumentIcon },
+  { name: "Testimonial", path: "/dashboard/testimonial", Icon: ChatIcon },
+  { name: "Services", path: "/dashboard/services", Icon: SettingsIcon },
+  { name: "Media", path: "/dashboard/media", Icon: ImageIcon },
 ];
 
 export default function Sidebar({ isOpen }) {
@@ -21,14 +35,14 @@ export default function Sidebar({ isOpen }) {
       <div className="h-16 flex items-center justify-center border-b border-gray-200 bg-gradient-to-r from-blue-600 to-purple-600">
         {isOpen ? (
           <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
-              <span className="text-blue-600 font-bold text-lg">P</span>
+            <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center shadow-sm">
+              <PortfolioIcon className="w-5 h-5 text-blue-600" />
             </div>
             <h1 className="text-xl font-bold text-white">Portfolio CMS</h1>
           </div>
         ) : (
-          <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
-            <span className="text-blue-600 font-bold text-lg">P</span>
+          <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center shadow-sm">
+            <PortfolioIcon className="w-5 h-5 text-blue-600" />
           </div>
         )}
       </div>
@@ -49,7 +63,7 @@ export default function Sidebar({ isOpen }) {
             end={item.path === '/dashboard'}
             title={!isOpen ? item.name : ''}
           >
-            <span className="text-lg">{item.icon}</span>
+            <item.Icon className="w-5 h-5 flex-shrink-0" />
             {isOpen && (
               <span className="ml-3 font-medium">{item.name}</span>
             )}

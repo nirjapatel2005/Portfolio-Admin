@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { UserIcon } from "../components/Icons";
 import { homeService } from "../services";
 
 export default function HomeSettings() {
@@ -190,7 +191,7 @@ export default function HomeSettings() {
                 <img src={form.profileImage} alt="Profile" className="w-full h-full object-cover" />
               ) : (
                 <div className="w-full h-full bg-gradient-to-br from-gray-300 to-gray-400 flex items-center justify-center">
-                  <span className="text-3xl text-gray-600">👤</span>
+                  <UserIcon className="w-12 h-12 text-gray-600" />
                 </div>
               )}
             </div>

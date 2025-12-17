@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { BellIcon, ChatIcon, EmailIcon, UserIcon } from "../components/Icons";
 import { contactService } from "../services";
 
 export default function Notifications() {
@@ -87,19 +88,21 @@ export default function Notifications() {
                     <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-3">
                       <div className="space-y-2">
                         <div className="flex items-center gap-2 text-sm font-semibold text-gray-900">
-                          <span className="text-blue-600">🔔</span>
+                          <BellIcon className="w-4 h-4 text-blue-600" />
                           <span>{n.subject || "New contact message"}</span>
                         </div>
                         <div className="flex items-center gap-2 text-sm text-gray-700">
-                          <span className="text-gray-500">👤</span>
+                          <UserIcon className="w-4 h-4 text-gray-500" />
                           <span className="font-medium">{n.name || "Unknown sender"}</span>
                         </div>
                         <div className="flex items-center gap-2 text-sm text-gray-700 break-all">
-                          <span className="text-gray-500">📧</span>
+                          <EmailIcon className="w-4 h-4 text-gray-500" />
                           <span>{n.email || "No email provided"}</span>
                         </div>
                         <div className="flex items-center gap-2 text-xs text-gray-500">
-                          <span className="text-gray-500">🗓️</span>
+                          <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                          </svg>
                           <span>{formatDate(n.createdAt)}</span>
                         </div>
                       </div>
@@ -119,7 +122,7 @@ export default function Notifications() {
 
                     <div className="mt-3 text-gray-800 leading-relaxed text-sm whitespace-pre-wrap border-t border-gray-100 pt-3">
                       <div className="flex items-center gap-2 text-gray-700 mb-2 text-sm">
-                        <span className="text-gray-500">💬</span>
+                        <ChatIcon className="w-4 h-4 text-gray-500" />
                         <span className="font-medium">Message</span>
                       </div>
                       <p>{n.message || "No message provided."}</p>
