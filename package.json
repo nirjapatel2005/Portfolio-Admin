@@ -1,0 +1,19 @@
+{
+  "name": "portfolio-admin",
+  "version": "1.0.0",
+  "description": "Portfolio Admin Panel - Root package.json for Vercel deployment",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "cd admin-panel && npm install && npm run build",
+    "dev": "cd admin-panel && npm run dev",
+    "start": "cd admin-panel && npm run preview"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [],
+  "author": "nirja",
+  "license": "ISC"
+}
+
