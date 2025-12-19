@@ -18,6 +18,20 @@ export const SocketProvider = ({ children }) => {
     // Get API base URL from config
     const API_BASE_URL = config.apiBaseUrl;
     
+    // Check if we should connect to Socket.io
+    // Prevent connection if:
+    // - In production mode AND API URL is localhost (prevents browser local network permission popup)
+    const isLocalhost = API_BASE_URL.includes('localhost') || API_BASE_URL.includes('127.0.0.1');
+    const shouldConnect = isDevelopment || !isLocalhost;
+    
+    if (!shouldConnect) {
+      // Don't connect in production when API URL is localhost
+      if (isDevelopment) {
+        console.log("Socket.io connection skipped: Production mode with localhost API URL");
+      }
+      return;
+    }
+    
     // Create socket connection
     const newSocket = io(API_BASE_URL, {
       transports: ["websocket", "polling"],
