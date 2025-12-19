@@ -1,12 +1,15 @@
 import { useEffect, useState } from "react";
 import Modal from "../components/Modal";
 import { experienceService } from "../services/experienceService";
+import ConfirmDialog from "../components/ConfirmDialog";
 
 export default function Experience() {
   const [experiences, setExperiences] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editingExp, setEditingExp] = useState(null);
+  const [confirmState, setConfirmState] = useState({ open: false, id: null });
+  const [confirmLoading, setConfirmLoading] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
     company: "",
@@ -68,19 +71,22 @@ export default function Experience() {
     setError("");
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this experience?")) {
-      return;
-    }
+  const requestDelete = (id) => setConfirmState({ open: true, id });
 
+  const handleDelete = async () => {
+    if (!confirmState.id) return;
     try {
-      await experienceService.delete(id);
+      setConfirmLoading(true);
+      await experienceService.delete(confirmState.id);
       setSuccess("Experience deleted successfully");
       fetchExperiences();
       setTimeout(() => setSuccess(""), 3000);
     } catch (err) {
       console.error("Error deleting experience:", err);
       setError(err.response?.data?.error || "Failed to delete experience");
+    } finally {
+      setConfirmLoading(false);
+      setConfirmState({ open: false, id: null });
     }
   };
 
@@ -219,7 +225,7 @@ export default function Experience() {
                     </svg>
                   </button>
                   <button
-                    onClick={() => handleDelete(exp._id)}
+                    onClick={() => requestDelete(exp._id)}
                     className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                     title="Delete"
                   >
@@ -360,6 +366,16 @@ export default function Experience() {
               </div>
             </form>
       </Modal>
+
+      <ConfirmDialog
+        isOpen={confirmState.open}
+        title="Delete this experience?"
+        description="This experience entry will be permanently removed."
+        confirmLabel={confirmLoading ? "Deleting..." : "Delete"}
+        onConfirm={handleDelete}
+        onCancel={() => setConfirmState({ open: false, id: null })}
+        tone="danger"
+      />
     </div>
   );
 }

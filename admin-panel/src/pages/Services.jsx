@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import ConfirmDialog from "../components/ConfirmDialog";
 import Modal from "../components/Modal";
 import { serviceService } from "../services/serviceService";
 
@@ -7,6 +8,8 @@ export default function Services() {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editingService, setEditingService] = useState(null);
+  const [confirmState, setConfirmState] = useState({ open: false, id: null });
+  const [confirmLoading, setConfirmLoading] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -61,19 +64,22 @@ export default function Services() {
     setError("");
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this service?")) {
-      return;
-    }
+  const requestDelete = (id) => setConfirmState({ open: true, id });
 
+  const handleDelete = async () => {
+    if (!confirmState.id) return;
     try {
-      await serviceService.delete(id);
+      setConfirmLoading(true);
+      await serviceService.delete(confirmState.id);
       setSuccess("Service deleted successfully");
       fetchServices();
       setTimeout(() => setSuccess(""), 3000);
     } catch (err) {
       console.error("Error deleting service:", err);
       setError(err.response?.data?.error || "Failed to delete service");
+    } finally {
+      setConfirmLoading(false);
+      setConfirmState({ open: false, id: null });
     }
   };
 
@@ -185,7 +191,7 @@ export default function Services() {
                   Edit
                 </button>
                 <button
-                  onClick={() => handleDelete(service._id)}
+                  onClick={() => requestDelete(service._id)}
                   className="flex-1 bg-red-600 text-white py-2 px-4 rounded hover:bg-red-700 transition-colors text-sm"
                 >
                   Delete
@@ -286,6 +292,16 @@ export default function Services() {
               </div>
             </form>
       </Modal>
+
+      <ConfirmDialog
+        isOpen={confirmState.open}
+        title="Delete this service?"
+        description="Clients will no longer see this service on the site."
+        confirmLabel={confirmLoading ? "Deleting..." : "Delete"}
+        onConfirm={handleDelete}
+        onCancel={() => setConfirmState({ open: false, id: null })}
+        tone="danger"
+      />
     </div>
   );
 }

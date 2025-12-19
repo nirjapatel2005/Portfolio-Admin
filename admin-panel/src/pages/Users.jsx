@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import ConfirmDialog from "../components/ConfirmDialog";
 import Modal from "../components/Modal";
 import { useAuth } from "../context/AuthContext";
 import { userService } from "../services/userService";
@@ -10,6 +11,8 @@ export default function Users() {
   const [showModal, setShowModal] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
+  const [confirmState, setConfirmState] = useState({ open: false, id: null });
+  const [confirmLoading, setConfirmLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -61,19 +64,24 @@ export default function Users() {
     setError("");
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this user?")) {
-      return;
-    }
+  const requestDelete = (id) => {
+    setConfirmState({ open: true, id });
+  };
 
+  const handleDelete = async () => {
+    if (!confirmState.id) return;
     try {
-      await userService.delete(id);
+      setConfirmLoading(true);
+      await userService.delete(confirmState.id);
       setSuccess("User deleted successfully");
       fetchUsers();
       setTimeout(() => setSuccess(""), 3000);
     } catch (err) {
       console.error("Error deleting user:", err);
       setError(err.response?.data?.error || "Failed to delete user");
+    } finally {
+      setConfirmLoading(false);
+      setConfirmState({ open: false, id: null });
     }
   };
 
@@ -218,7 +226,7 @@ export default function Users() {
                         </button>
                         {user._id !== currentUser?.id && (
                           <button
-                            onClick={() => handleDelete(user._id)}
+                            onClick={() => requestDelete(user._id)}
                             className="text-red-600 hover:text-red-700 text-sm font-medium"
                           >
                             Delete
@@ -378,6 +386,16 @@ export default function Users() {
               </div>
             </form>
       </Modal>
+
+      <ConfirmDialog
+        isOpen={confirmState.open}
+        title="Delete this user?"
+        description="This action cannot be undone. The user will permanently lose access."
+        confirmLabel={confirmLoading ? "Deleting..." : "Delete"}
+        onConfirm={handleDelete}
+        onCancel={() => setConfirmState({ open: false, id: null })}
+        tone="danger"
+      />
     </div>
   );
 }

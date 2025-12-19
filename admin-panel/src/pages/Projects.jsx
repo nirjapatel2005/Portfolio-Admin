@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
+import ConfirmDialog from "../components/ConfirmDialog";
 import Modal from "../components/Modal";
 import { projectService } from "../services/projectService";
 
@@ -9,6 +10,8 @@ export default function Projects() {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editingProject, setEditingProject] = useState(null);
+  const [confirmState, setConfirmState] = useState({ open: false, id: null });
+  const [confirmLoading, setConfirmLoading] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -98,19 +101,22 @@ export default function Projects() {
     setError("");
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this project?")) {
-      return;
-    }
+  const requestDelete = (id) => setConfirmState({ open: true, id });
 
+  const handleDelete = async () => {
+    if (!confirmState.id) return;
     try {
-      await projectService.delete(id);
+      setConfirmLoading(true);
+      await projectService.delete(confirmState.id);
       setSuccess("Project deleted successfully");
       fetchProjects();
       setTimeout(() => setSuccess(""), 3000);
     } catch (err) {
       console.error("Error deleting project:", err);
       setError(err.response?.data?.error || "Failed to delete project");
+    } finally {
+      setConfirmLoading(false);
+      setConfirmState({ open: false, id: null });
     }
   };
 
@@ -257,7 +263,7 @@ export default function Projects() {
                   Edit
                 </button>
                 <button
-                  onClick={() => handleDelete(project._id)}
+                  onClick={() => requestDelete(project._id)}
                   className="flex-1 bg-red-600 text-white py-2 px-4 rounded hover:bg-red-700 transition-colors text-sm"
                 >
                   Delete
@@ -413,6 +419,16 @@ export default function Projects() {
               </div>
             </form>
       </Modal>
+
+      <ConfirmDialog
+        isOpen={confirmState.open}
+        title="Delete this project?"
+        description="This project will be removed from your portfolio."
+        confirmLabel={confirmLoading ? "Deleting..." : "Delete"}
+        onConfirm={handleDelete}
+        onCancel={() => setConfirmState({ open: false, id: null })}
+        tone="danger"
+      />
     </div>
   );
 }

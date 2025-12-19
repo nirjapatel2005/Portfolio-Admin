@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import Modal from "../components/Modal";
 import { blogService } from "../services/blogService";
+import ConfirmDialog from "../components/ConfirmDialog";
 
 export default function Blog() {
   const [searchParams] = useSearchParams();
@@ -9,6 +10,8 @@ export default function Blog() {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editingPost, setEditingPost] = useState(null);
+  const [confirmState, setConfirmState] = useState({ open: false, id: null });
+  const [confirmLoading, setConfirmLoading] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
     excerpt: "",
@@ -90,19 +93,22 @@ export default function Blog() {
     setError("");
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this blog post?")) {
-      return;
-    }
+  const requestDelete = (id) => setConfirmState({ open: true, id });
 
+  const handleDelete = async () => {
+    if (!confirmState.id) return;
     try {
-      await blogService.delete(id);
+      setConfirmLoading(true);
+      await blogService.delete(confirmState.id);
       setSuccess("Blog post deleted successfully");
       fetchPosts();
       setTimeout(() => setSuccess(""), 3000);
     } catch (err) {
       console.error("Error deleting blog post:", err);
       setError(err.response?.data?.error || "Failed to delete blog post");
+    } finally {
+      setConfirmLoading(false);
+      setConfirmState({ open: false, id: null });
     }
   };
 
@@ -244,7 +250,7 @@ export default function Blog() {
                           Edit
                         </button>
                         <button
-                          onClick={() => handleDelete(post._id)}
+                          onClick={() => requestDelete(post._id)}
                           className="text-red-600 hover:text-red-700 text-sm font-medium"
                         >
                           Delete
@@ -410,6 +416,16 @@ export default function Blog() {
               </div>
             </form>
       </Modal>
+
+      <ConfirmDialog
+        isOpen={confirmState.open}
+        title="Delete this blog post?"
+        description="This post will be permanently removed."
+        confirmLabel={confirmLoading ? "Deleting..." : "Delete"}
+        onConfirm={handleDelete}
+        onCancel={() => setConfirmState({ open: false, id: null })}
+        tone="danger"
+      />
     </div>
   );
 }

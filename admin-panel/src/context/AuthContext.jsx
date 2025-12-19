@@ -1,5 +1,4 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { authService } from "../services/authServices";
 
 const AuthContext = createContext();
@@ -45,13 +44,13 @@ export const AuthProvider = ({ children }) => {
       // Validate response structure
       if (!response || !response.token) {
         console.error("Login error: Invalid response structure", response);
-        return false;
+        return { success: false, message: "Invalid response from server" };
       }
       
       localStorage.setItem("adminToken", response.token);
       setUser(response.user);
       setIsAuthenticated(true);
-      return true;
+      return { success: true };
     } catch (error) {
       console.error("Login error:", error);
       console.error("Error details:", {
@@ -63,7 +62,14 @@ export const AuthProvider = ({ children }) => {
       
       // Clear token on any login error
       localStorage.removeItem("adminToken");
-      return false;
+      return {
+        success: false,
+        message:
+          error.response?.data?.error ||
+          error.response?.data?.message ||
+          error.message ||
+          "Login failed",
+      };
     }
   };
 

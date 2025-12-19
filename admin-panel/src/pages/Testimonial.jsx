@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import ConfirmDialog from "../components/ConfirmDialog";
 import Modal from "../components/Modal";
 import { testimonialService } from "../services/testimonialService";
 
@@ -7,6 +8,8 @@ export default function Testimonial() {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editingTestimonial, setEditingTestimonial] = useState(null);
+  const [confirmState, setConfirmState] = useState({ open: false, id: null });
+  const [confirmLoading, setConfirmLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     role: "",
@@ -59,19 +62,22 @@ export default function Testimonial() {
     setError("");
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this testimonial?")) {
-      return;
-    }
+  const requestDelete = (id) => setConfirmState({ open: true, id });
 
+  const handleDelete = async () => {
+    if (!confirmState.id) return;
     try {
-      await testimonialService.delete(id);
+      setConfirmLoading(true);
+      await testimonialService.delete(confirmState.id);
       setSuccess("Testimonial deleted successfully");
       fetchTestimonials();
       setTimeout(() => setSuccess(""), 3000);
     } catch (err) {
       console.error("Error deleting testimonial:", err);
       setError(err.response?.data?.error || "Failed to delete testimonial");
+    } finally {
+      setConfirmLoading(false);
+      setConfirmState({ open: false, id: null });
     }
   };
 
@@ -179,7 +185,7 @@ export default function Testimonial() {
                   Edit
                 </button>
                 <button
-                  onClick={() => handleDelete(testimonial._id)}
+                  onClick={() => requestDelete(testimonial._id)}
                   className="flex-1 bg-red-600 text-white py-2 px-4 rounded hover:bg-red-700 transition-colors text-sm"
                 >
                   Delete
@@ -281,6 +287,16 @@ export default function Testimonial() {
               </div>
             </form>
       </Modal>
+
+      <ConfirmDialog
+        isOpen={confirmState.open}
+        title="Delete this testimonial?"
+        description="This testimonial will be permanently removed."
+        confirmLabel={confirmLoading ? "Deleting..." : "Delete"}
+        onConfirm={handleDelete}
+        onCancel={() => setConfirmState({ open: false, id: null })}
+        tone="danger"
+      />
     </div>
   );
 }

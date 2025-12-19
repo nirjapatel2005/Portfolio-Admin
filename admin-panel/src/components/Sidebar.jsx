@@ -30,7 +30,7 @@ const menuItems = [
 
 export default function Sidebar({ isOpen }) {
   return (
-    <aside className={`${isOpen ? 'w-64' : 'w-16'} bg-white shadow-lg transition-all duration-300 fixed left-0 top-0 h-full z-40`}>
+    <aside className={`${isOpen ? 'w-64' : 'w-16'} bg-white shadow-lg transition-all duration-300 fixed left-0 top-0 h-full z-30`}>
       {/* Logo */}
       <div className="h-16 flex items-center justify-center border-b border-gray-200 bg-gradient-to-r from-blue-600 to-purple-600">
         {isOpen ? (

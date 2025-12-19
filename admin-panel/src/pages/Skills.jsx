@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import ConfirmDialog from "../components/ConfirmDialog";
 import Modal from "../components/Modal";
 import { skillService } from "../services/skillService";
 
@@ -7,6 +8,8 @@ export default function Skills() {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editingSkill, setEditingSkill] = useState(null);
+  const [confirmState, setConfirmState] = useState({ open: false, id: null });
+  const [confirmLoading, setConfirmLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     level: 50,
@@ -59,19 +62,22 @@ export default function Skills() {
     setError("");
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this skill?")) {
-      return;
-    }
+  const requestDelete = (id) => setConfirmState({ open: true, id });
 
+  const handleDelete = async () => {
+    if (!confirmState.id) return;
     try {
-      await skillService.delete(id);
+      setConfirmLoading(true);
+      await skillService.delete(confirmState.id);
       setSuccess("Skill deleted successfully");
       fetchSkills();
       setTimeout(() => setSuccess(""), 3000);
     } catch (err) {
       console.error("Error deleting skill:", err);
       setError(err.response?.data?.error || "Failed to delete skill");
+    } finally {
+      setConfirmLoading(false);
+      setConfirmState({ open: false, id: null });
     }
   };
 
@@ -192,7 +198,7 @@ export default function Skills() {
                         </svg>
                       </button>
                       <button
-                        onClick={() => handleDelete(skill._id)}
+                        onClick={() => requestDelete(skill._id)}
                         className="p-2 text-red-600 hover:bg-red-50 rounded"
                         title="Delete"
                       >
@@ -256,7 +262,7 @@ export default function Skills() {
                       </svg>
                     </button>
                     <button
-                      onClick={() => handleDelete(skill._id)}
+                      onClick={() => requestDelete(skill._id)}
                       className="p-2 text-red-600 hover:bg-red-50 rounded"
                       title="Delete"
                     >
@@ -361,6 +367,16 @@ export default function Skills() {
               </div>
             </form>
       </Modal>
+
+      <ConfirmDialog
+        isOpen={confirmState.open}
+        title="Delete this skill?"
+        description="This skill will be removed from your portfolio."
+        confirmLabel={confirmLoading ? "Deleting..." : "Delete"}
+        onConfirm={handleDelete}
+        onCancel={() => setConfirmState({ open: false, id: null })}
+        tone="danger"
+      />
     </div>
   );
 }

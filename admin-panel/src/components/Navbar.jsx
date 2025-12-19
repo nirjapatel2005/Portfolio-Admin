@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useSocket } from "../context/SocketContext";
 import { contactService } from "../services";
+import ConfirmDialog from "./ConfirmDialog";
 
 export default function Navbar({ onToggleSidebar, sidebarOpen }) {
   const { logout, user } = useAuth();
@@ -12,6 +13,7 @@ export default function Navbar({ onToggleSidebar, sidebarOpen }) {
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const { socket } = useSocket();
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   const fetchNotifications = async () => {
     try {
@@ -53,14 +55,17 @@ export default function Navbar({ onToggleSidebar, sidebarOpen }) {
   };
 
   const handleLogout = () => {
-    if (window.confirm('Are you sure you want to logout?')) {
-      logout();
-      navigate("/login", { replace: true });
-    }
+    setShowLogoutConfirm(true);
+  };
+
+  const confirmLogout = () => {
+    setShowLogoutConfirm(false);
+    logout();
+    navigate("/login", { replace: true });
   };
 
   return (
-    <header className={`fixed top-0 ${sidebarOpen ? 'left-64' : 'left-16'} right-0 h-16 bg-white shadow-md flex items-center justify-between px-6 z-30 transition-all duration-300`}>
+    <header className={`fixed top-0 ${sidebarOpen ? 'left-64' : 'left-16'} right-0 h-16 bg-white shadow-md flex items-center justify-between px-6 z-40 transition-all duration-300`}>
       <div className="flex items-center space-x-4">
         <button
           onClick={onToggleSidebar}
@@ -183,6 +188,15 @@ export default function Navbar({ onToggleSidebar, sidebarOpen }) {
           onClick={() => setShowProfileMenu(false)}
         />
       )}
+
+      <ConfirmDialog
+        isOpen={showLogoutConfirm}
+        title="Logout from admin?"
+        description="You will need to sign in again to access the dashboard."
+        confirmLabel="Logout"
+        onConfirm={confirmLogout}
+        onCancel={() => setShowLogoutConfirm(false)}
+      />
     </header>
   );
 }

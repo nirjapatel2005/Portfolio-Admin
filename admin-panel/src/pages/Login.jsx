@@ -7,6 +7,7 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const navigate = useNavigate();
   const { login } = useAuth();
@@ -14,24 +15,28 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    setIsSubmitting(true);
 
     if (!email || !password) {
       setError("Email and password are required");
+      setIsSubmitting(false);
       return;
     }
 
     try {
-      const success = await login({ email, password });
+      const result = await login({ email, password });
 
-      if (success) {
+      if (result?.success) {
         navigate("/dashboard");
       } else {
-        setError("Invalid email or password. Please check your credentials.");
+        setError(result?.message || "Invalid email or password. Please check your credentials.");
       }
     } catch (err) {
       console.error("Login submission error:", err);
       setError(err.message || "An error occurred during login. Please try again.");
     }
+    
+    setIsSubmitting(false);
   };
 
   return (
@@ -120,9 +125,19 @@ export default function Login() {
 
           <button
             type="submit"
-            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 font-medium"
+            disabled={isSubmitting}
+            className={`w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-lg transition-all duration-200 font-medium ${
+              isSubmitting ? "opacity-70 cursor-not-allowed" : "hover:from-blue-700 hover:to-purple-700"
+            }`}
           >
-            Sign In to Dashboard
+            {isSubmitting ? (
+              <span className="flex items-center justify-center space-x-2">
+                <span className="h-5 w-5 border-2 border-white/70 border-t-transparent rounded-full animate-spin" />
+                <span>Signing in...</span>
+              </span>
+            ) : (
+              "Sign In to Dashboard"
+            )}
           </button>
 
           <div className="mt-4 text-center">
